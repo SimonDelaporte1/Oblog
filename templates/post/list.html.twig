@@ -1,0 +1,39 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Liste des articles{% endblock %}
+
+{% block body %}
+
+<h1>Liste des articles</h1>
+
+<p><a href="{{ path('post_create') }}" class="btn btn-success">Ajouter un article</a></p>
+
+<table class="table table-hoverable table-striped">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Title</th>
+            <th scope="col">Date de publication</th>
+            <th scope="col">Modifié le</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+
+        {% for post in postsList %}
+        <tr>
+            <th scope="row">{{ post.id }}</th>
+            <td><a href="{{ path('post_show', {id: post.id}) }}">{{ post.title }}</a></td>
+            <td>{{ post.publishedAt|date("Y-m-d H:i") }}</td>
+            <td>{% if post.updatedAt %}{{ post.updatedAt|date("Y-m-d H:i") }}{% endif %}</td>
+            <td>
+                <a class="btn btn-sm btn-primary" href="{{ path('post_update', {id: post.id}) }}">Modifier</a>
+                <a onclick="return confirm('Supprimer l\'article : {{ post.title|e('js') }} ?')" class="btn btn-sm btn-danger" href="{{ path('post_delete', {id: post.id}) }}">Supprimer</a>
+            </td>
+        </tr>
+        {% endfor %}
+
+    </tbody>
+</table>
+
+{% endblock %}
