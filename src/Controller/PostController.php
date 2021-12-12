@@ -2,15 +2,19 @@
 
 namespace App\Controller;
 
-use App\Entity\Post;
-use App\Repository\PostRepository;
+use finfo;
 use DateTime;
+use App\Entity\Post;
+use App\Entity\Author;
 use DateTimeImmutable;
+use App\Entity\Comment;
+use App\Repository\PostRepository;
+use App\Repository\AuthorRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class PostController extends AbstractController
 {
@@ -21,11 +25,12 @@ class PostController extends AbstractController
      * 
      * @Route("/post/create", name="post_create", methods={"GET", "POST"})
      */
-    public function create(ManagerRegistry $doctrine, Request $request): Response
+    public function create(AuthorRepository $AuthorRepository, ManagerRegistry $doctrine, Request $request): Response
     {
         // Si le form a été posté (la méthode HTTP de la requête est POST), on le traite
         if ($request->isMethod('POST')) {
             // On crée une entité "Doctrine"
+            $author = $AuthorRepository->find(1);
             $post = new Post;
             //dump($post);
 
@@ -42,6 +47,7 @@ class PostController extends AbstractController
             $date = new DateTimeImmutable($request->request->get('published_at'));
             $post->setPublishedAt($date);
 
+            $post->setAuthor($author);
             // On va faire appel au Manager de Doctrine
             $entityManager = $doctrine->getManager();
             // Prépare-toi à "persister" notre objet (req. INSERT INTO)
@@ -78,12 +84,32 @@ class PostController extends AbstractController
         ]);
     }
 
+
+    /**
+     * List posts
+     * 
+     * @Route("/author/list", name="author_list")
+     */
+    public function authorList(AuthorRepository $AuthorRepository)
+    {
+        // On trie par date de publication inverse
+        $authorsList = $AuthorRepository->findBy(
+            [], // Pas de critère, pas de condition WHERE
+            ['lastname' => 'ASC']
+        );
+
+
+        return $this->render('post/authorList.html.twig', [
+            'authorsList' => $authorsList,
+        ]);
+    }
+
     /**
      * Post show
      * 
      * @Route("/post/{id}", name="post_show", requirements={"id"="\d+"})
      */
-    public function show($id, ManagerRegistry $doctrine)
+    public function show($id, PostRepository $PostRepository, ManagerRegistry $doctrine, Request $request)
     {
         // Alternative pour accéder au Repository de l'entité Post
         $postRepository = $doctrine->getRepository(Post::class);
@@ -93,6 +119,34 @@ class PostController extends AbstractController
         // Post not found ?
         if ($post === null) {
             throw $this->createNotFoundException('Article non trouvé.');
+        }
+
+        if ($request->isMethod('POST')) {
+            // On crée une entité "Doctrine"
+            $post = $PostRepository->find($id);
+            $comment = new Comment;
+            //dump($post);
+
+            // Les valeurs par défaut des autres champs nécessaires
+            // sont définis directement dans l'entité
+
+            // Reste à définir celles qui viennent du form 
+
+            // Titre
+            $comment->setUsername($request->request->get('username')); // $post->setTitle($_POST['title']);
+            // Contenu
+            $comment->setBody($request->request->get('body'));
+            // Date de publication basée sur l'input du form
+            $comment->setPost($post);
+            // On va faire appel au Manager de Doctrine
+            $entityManager = $doctrine->getManager();
+            // Prépare-toi à "persister" notre objet (req. INSERT INTO)
+            $entityManager->persist($comment);
+
+            // On exécute les requêtes SQL
+            $entityManager->flush();
+
+            //dd($post);
         }
 
         return $this->render('post/show.html.twig', [

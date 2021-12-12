@@ -1,0 +1,45 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Liste des auteurs et leurs articles{% endblock %}
+
+{% block body %}
+
+<h1>Liste des auteurs et leurs articles</h1>
+
+<p><a href="{{ path('post_create') }}" class="btn btn-success">Ajouter un article</a></p>
+
+<table class="table table-hoverable table-striped">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Nom</th>
+            <th scope="col">Prénom</th>
+            <th scope="col">créé le</th>
+        </tr>
+    </thead>
+    <tbody>
+
+    {% for author in authorsList %}
+        <tr>
+            <th scope="col">{{ author.id }}</th>
+            <th scope="col">{{ author.firstname }}</th>
+            <th scope="col">{{ author.lastname	 }}</th>
+            <th scope="col">{{ author.createdAt|date("d-m-Y H:i") }}</th>
+        </tr>
+        <tr>
+            <td colspan="4">
+        {% for post in author.posts %}
+                <ul>
+                    <li>#{{ post.id }} : <a href="{{ path('post_show', {id: post.id}) }}">{{ post.title }}</a></li>
+                </ul>
+        {% else %}
+        Pas d'article pour cet auteur
+        {% endfor %}
+    </td>
+</tr>
+    {% endfor %}
+
+    </tbody>
+</table>
+
+{% endblock %}
