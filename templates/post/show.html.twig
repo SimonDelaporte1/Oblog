@@ -10,12 +10,37 @@
 
 <p>{{ post.body }}</p>
 
+
 <h3>Les commentaires</h3>
+
+{#
 <ul>
 {% for comment in post.comments %}
     <li>Commentaire "{{ comment.body }}" <br /> écrit par {{ comment.username }}</li>    
 {% endfor %}
 </ul>
+#}
+
+
+<div class="card m-1">
+    <h5 class="card-title p-1">Commentaires</h5>
+    {% if post.comments is empty %}
+
+    <p class="card-text m-2">Pas de commentaires pour le moment.</p>
+
+    {% else %}
+        {% for comment in post.comments %}
+        <div class="card-body">
+            <p class="card-text">{{ comment.body }}</p>
+            <p class="card-text"><small class="text-muted">par {{ comment.username }}, le {{
+                    comment.publishedAt|date("Y-m-d")
+                    }}</small></p>
+        </div>
+        <hr class="m-2">
+        {% endfor %}
+    {% endif %}
+</div>
+
 
 Poster votre commentaire : 
 <form class="form" method="post">

@@ -86,25 +86,6 @@ class PostController extends AbstractController
 
 
     /**
-     * List posts
-     * 
-     * @Route("/author/list", name="author_list")
-     */
-    public function authorList(AuthorRepository $AuthorRepository)
-    {
-        // On trie par date de publication inverse
-        $authorsList = $AuthorRepository->findBy(
-            [], // Pas de critère, pas de condition WHERE
-            ['lastname' => 'ASC']
-        );
-
-
-        return $this->render('post/authorList.html.twig', [
-            'authorsList' => $authorsList,
-        ]);
-    }
-
-    /**
      * Post show
      * 
      * @Route("/post/{id}", name="post_show", requirements={"id"="\d+"})
@@ -121,6 +102,13 @@ class PostController extends AbstractController
             throw $this->createNotFoundException('Article non trouvé.');
         }
 
+        
+        /* Sans la relation inverse
+            $commentRepository = $doctrine->getRepository(Comment::class);
+            // je veux les commentaires de l'article courant
+            $comments = $commentRepository->findBy(['post' => $post]);
+        */
+        
         if ($request->isMethod('POST')) {
             // On crée une entité "Doctrine"
             $post = $PostRepository->find($id);
@@ -151,6 +139,7 @@ class PostController extends AbstractController
 
         return $this->render('post/show.html.twig', [
             'post' => $post,
+            // 'comments' => $comments
         ]);
     }
 
