@@ -110,7 +110,7 @@ class PostController extends AbstractController
         */
         
         if ($request->isMethod('POST')) {
-            $comment = new Comment();
+            $comment = new Comment;
             //dump($post);
 
             // Les valeurs par défaut des autres champs nécessaires
@@ -135,7 +135,6 @@ class PostController extends AbstractController
             $this->addFlash(
                 'success', 'Commentaire ajouté'
             );
-
             return $this->redirectToRoute('post_show', ['id' => $post->getId()]);
 
             //dd($post);
