@@ -88,7 +88,7 @@ class PostController extends AbstractController
     /**
      * Post show
      * 
-     * @Route("/post/{id}", name="post_show", requirements={"id"="\d+"})
+     * @Route("/post/{id}", name="post_show", requirements={"id"="\d+"}, methods={"GET", "POST"})
      */
     public function show($id, PostRepository $PostRepository, ManagerRegistry $doctrine, Request $request)
     {
@@ -110,9 +110,7 @@ class PostController extends AbstractController
         */
         
         if ($request->isMethod('POST')) {
-            // On crée une entité "Doctrine"
-            $post = $PostRepository->find($id);
-            $comment = new Comment;
+            $comment = new Comment();
             //dump($post);
 
             // Les valeurs par défaut des autres champs nécessaires
@@ -133,6 +131,12 @@ class PostController extends AbstractController
 
             // On exécute les requêtes SQL
             $entityManager->flush();
+
+            $this->addFlash(
+                'success', 'Commentaire ajouté'
+            );
+
+            return $this->redirectToRoute('post_show', ['id' => $post->getId()]);
 
             //dd($post);
         }
