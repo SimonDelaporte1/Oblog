@@ -8,6 +8,12 @@
 
 <p><i>Publié le : {{ post.publishedAt|date("Y-m-d H:i") }}</i></p>
 
+<p>
+    {% for tag in post.tags %}
+    <button type="button" class="btn btn-primary btn-sm">{{ tag.name }}</button>
+    {% endfor %}
+</p>
+
 <p>{{ post.body }}</p>
 
 

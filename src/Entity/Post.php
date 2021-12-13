@@ -67,6 +67,11 @@ class Post
     private $author;
 
     /**
+     * @ORM\ManyToMany(targetEntity=Tag::class, inversedBy="posts")
+     */
+    private $tags;
+
+    /**
      * On peut définir les propriétés par défaut de notre entité
      */
     public function __construct()
@@ -74,6 +79,7 @@ class Post
         $this->nbLikes = 0;
         $this->createdAt = new DateTime();
         $this->comments = new ArrayCollection();
+        $this->tags = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -203,6 +209,30 @@ class Post
     public function setAuthor(?Author $author): self
     {
         $this->author = $author;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Tag[]
+     */
+    public function getTags(): Collection
+    {
+        return $this->tags;
+    }
+
+    public function addTag(Tag $tag): self
+    {
+        if (!$this->tags->contains($tag)) {
+            $this->tags[] = $tag;
+        }
+
+        return $this;
+    }
+
+    public function removeTag(Tag $tag): self
+    {
+        $this->tags->removeElement($tag);
 
         return $this;
     }
