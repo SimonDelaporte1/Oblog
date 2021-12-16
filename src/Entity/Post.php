@@ -2,11 +2,12 @@
 
 namespace App\Entity;
 
-use App\Repository\PostRepository;
 use DateTime;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\PostRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @ORM\Entity(repositoryClass=PostRepository::class)
@@ -65,7 +66,7 @@ class Post
      * @ORM\JoinColumn(nullable=false)
      */
     private $author;
-
+    
     /**
      * @ORM\ManyToMany(targetEntity=Tag::class, inversedBy="posts")
      */
@@ -78,6 +79,7 @@ class Post
     {
         $this->nbLikes = 0;
         $this->createdAt = new DateTime();
+        $this->publishedAt = new DateTimeImmutable();
         $this->comments = new ArrayCollection();
         $this->tags = new ArrayCollection();
     }

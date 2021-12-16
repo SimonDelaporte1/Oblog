@@ -16,6 +16,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+
 class PostController extends AbstractController
 {
     /**
@@ -27,27 +31,31 @@ class PostController extends AbstractController
      */
     public function create(AuthorRepository $AuthorRepository, ManagerRegistry $doctrine, Request $request): Response
     {
-        // Si le form a été posté (la méthode HTTP de la requête est POST), on le traite
-        if ($request->isMethod('POST')) {
+        $post = new Post();
+        $form = $this->createFormBuilder($post)
+            ->add('title', TextType::class)
+            ->add('body', TextareaType::class)
+            ->add('publishedAt', DateTimeType::class, [
+                'input' => 'datetime_immutable',
+            ])
+            ->add('author')
+            ->getForm();
+
+        
+           // Le Form inspecte la Requête
+            $form->handleRequest($request);
+
+            // Si le form a été soumis et qu'il est valide
+         if ($form->isSubmitted() && $form->isValid()) {
+            
+            // A ce stade, le From a renseigné l'entité $post :)
+            // dd($post);
+
             // On crée une entité "Doctrine"
-            $author = $AuthorRepository->find(1);
-            $post = new Post;
+            // $author = $AuthorRepository->find(6);
+            // $post->setAuthor($author);
             //dump($post);
 
-            // Les valeurs par défaut des autres champs nécessaires
-            // sont définis directement dans l'entité
-
-            // Reste à définir celles qui viennent du form 
-
-            // Titre
-            $post->setTitle($request->request->get('title')); // $post->setTitle($_POST['title']);
-            // Contenu
-            $post->setBody($request->request->get('body'));
-            // Date de publication basée sur l'input du form
-            $date = new DateTimeImmutable($request->request->get('published_at'));
-            $post->setPublishedAt($date);
-
-            $post->setAuthor($author);
             // On va faire appel au Manager de Doctrine
             $entityManager = $doctrine->getManager();
             // Prépare-toi à "persister" notre objet (req. INSERT INTO)
@@ -59,11 +67,13 @@ class PostController extends AbstractController
             //dd($post);
 
             // On redirige vers la liste
-            return $this->redirectToRoute('post_list');
+            return $this->redirectToRoute('post_show', ['id' => $post->getId()]);
         }
 
         // Sinon on affiche le formulaire
-        return $this->render('post/add.html.twig');
+        return $this->render('post/add.html.twig', [
+            'form' => $form->createView(),
+        ]);
     }
 
     /**

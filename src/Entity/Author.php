@@ -51,6 +51,15 @@ class Author
         $this->createdAt = new DateTime();
     }
 
+    /**
+     * Méthode magique de PHP permettant d'afficher une chaine de c.
+     * si on souhaite afficher l'objet, par ex. echo $author;
+     */
+    public function __toString()
+    {
+        return $this->firstname.' '.$this->lastname;
+    }
+    
     public function getId(): ?int
     {
         return $this->id;
