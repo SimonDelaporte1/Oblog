@@ -8,6 +8,7 @@ use App\Entity\Post;
 use App\Entity\Author;
 use DateTimeImmutable;
 use App\Entity\Comment;
+use App\Form\CommentType;
 use App\Form\PostType;
 use App\Repository\PostRepository;
 use App\Repository\AuthorRepository;
@@ -108,20 +109,18 @@ class PostController extends AbstractController
             // je veux les commentaires de l'article courant
             $comments = $commentRepository->findBy(['post' => $post]);
         */
-        
-        if ($request->isMethod('POST')) {
-            $comment = new Comment;
+        $comment = new Comment;
+        $form = $this->createForm(CommentType::class, $comment);
+        $form->handleRequest($request);
+
+        // Si le form a été soumis et qu'il est valide
+         if ($form->isSubmitted() && $form->isValid()) {
             //dump($post);
 
             // Les valeurs par défaut des autres champs nécessaires
             // sont définis directement dans l'entité
 
             // Reste à définir celles qui viennent du form 
-
-            // Titre
-            $comment->setUsername($request->request->get('username')); // $post->setTitle($_POST['title']);
-            // Contenu
-            $comment->setBody($request->request->get('body'));
             // Date de publication basée sur l'input du form
             $comment->setPost($post);
             // On va faire appel au Manager de Doctrine
@@ -142,7 +141,7 @@ class PostController extends AbstractController
 
         return $this->render('post/show.html.twig', [
             'post' => $post,
-            // 'comments' => $comments
+            'form' => $form->createView(),
         ]);
     }
 

@@ -3,8 +3,11 @@
 namespace App\Entity;
 
 use DateTime;
+use App\Entity\Post;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\CommentRepository;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=CommentRepository::class)
@@ -50,6 +53,7 @@ class Comment
     private $post;
     public function __construct()
     {
+        $this->publishedAt = new DateTimeImmutable();
         $this->createdAt = new DateTime();
     }
     public function getId(): ?int

@@ -50,17 +50,13 @@
 
 
 Poster votre commentaire : 
-<form class="form" method="post">
-    <div class="col-12 col-md-6 mb-3">
-        <label for="username" class="form-label">Pseudo</label>
-        <input type="text" class="form-control" id="username" name="username">
-    </div>
-    <div class="col-12 col-md-6 mb-3">
-        <label for="body" class="form-label">Contenu</label>
-        <textarea class="form-control" id="body" name="body"></textarea>
-    </div>
-    <button class="btn btn-primary">Enregistrer</button>
-</form>
+{{ form_start(form, {attr: {novalidate: 'novalidate'}}) }}
+
+    {{ form_widget(form) }}
+
+    <button type="submit" class="btn btn-success">Enregistrer</button>
+
+{{ form_end(form) }}
 
 
 
