@@ -150,7 +150,7 @@ class PostController extends AbstractController
      * 
      * @Route("/post/update/{id}", name="post_update", requirements={"id"="\d+"})
      */
-    public function update($id, PostRepository $postRepository, ManagerRegistry $doctrine)
+    public function update($id, PostRepository $postRepository, ManagerRegistry $doctrine, Request $request)
     {
         // On va chercher l'enregistrement
         $post = $postRepository->find($id);
@@ -160,21 +160,44 @@ class PostController extends AbstractController
             throw $this->createNotFoundException('Article non trouvé.');
         }
 
-        // On modifie la date de mise à jour à la date actuelle
-        $post->setUpdatedAt(new DateTime());
 
-        // On le met à jour via le Manager
-        $entityManager = $doctrine->getManager();
-        // Exécute la requête d'UPDATE
-        $entityManager->flush();
+        $form = $this->createForm(PostType::class, $post);
 
+        // Le Form inspecte la Requête
+        $form->handleRequest($request);
+
+        // Si le form a été soumis et qu'il est valide
+         if ($form->isSubmitted() && $form->isValid()) {
+            
+            // A ce stade, le From a renseigné l'entité $post :)
+            // dd($post);
+
+            // On crée une entité "Doctrine"
+            // $author = $AuthorRepository->find(6);
+            // $post->setAuthor($author);
+            //dump($post);
+
+            // On va faire appel au Manager de Doctrine
+            $entityManager = $doctrine->getManager();
+            // Prépare-toi à "persister" notre objet (req. INSERT INTO)
+            $entityManager->persist($post);
+
+            // On exécute les requêtes SQL
+            $entityManager->flush();
+
+            //dd($post);
+
+            $this->addFlash('success', 'Article mis à jour.');
+            // On redirige vers la liste
+            return $this->redirectToRoute('post_show', ['id' => $post->getId()]);
+        }
+        
         // Ajout d'un message Flash
         // (type, message) => (label, message)
-        $this->addFlash('success', 'Article mis à jour.');
-        $this->addFlash('success', 'C\'est top :)');
-        $this->addFlash('warning', 'Attention derrière toi !');
-
-        return $this->redirectToRoute('post_list');
+        // Sinon on affiche le formulaire
+        return $this->render('post/add.html.twig', [
+            'form' => $form->createView(),
+        ]);
     }
 
     /**
