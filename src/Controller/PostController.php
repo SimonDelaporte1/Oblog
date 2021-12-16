@@ -8,6 +8,7 @@ use App\Entity\Post;
 use App\Entity\Author;
 use DateTimeImmutable;
 use App\Entity\Comment;
+use App\Form\PostType;
 use App\Repository\PostRepository;
 use App\Repository\AuthorRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -16,9 +17,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 class PostController extends AbstractController
 {
@@ -32,20 +30,12 @@ class PostController extends AbstractController
     public function create(AuthorRepository $AuthorRepository, ManagerRegistry $doctrine, Request $request): Response
     {
         $post = new Post();
-        $form = $this->createFormBuilder($post)
-            ->add('title', TextType::class)
-            ->add('body', TextareaType::class)
-            ->add('publishedAt', DateTimeType::class, [
-                'input' => 'datetime_immutable',
-            ])
-            ->add('author')
-            ->getForm();
+        $form = $this->createForm(PostType::class, $post);
 
-        
-           // Le Form inspecte la Requête
-            $form->handleRequest($request);
+        // Le Form inspecte la Requête
+        $form->handleRequest($request);
 
-            // Si le form a été soumis et qu'il est valide
+        // Si le form a été soumis et qu'il est valide
          if ($form->isSubmitted() && $form->isValid()) {
             
             // A ce stade, le From a renseigné l'entité $post :)

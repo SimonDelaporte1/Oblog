@@ -12,7 +12,7 @@ donc soit /post/add, soit /post/edit/5 par ex.
 #}
 
 
-{{ form_start(form) }}
+{{ form_start(form, {attr: {novalidate: 'novalidate'}}) }}
 
     {{ form_widget(form) }}
 
