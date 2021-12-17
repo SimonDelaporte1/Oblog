@@ -139,9 +139,9 @@ class PostController extends AbstractController
             //dd($post);
         }
 
-        return $this->render('post/show.html.twig', [
+        return $this->renderForm('post/show.html.twig', [
             'post' => $post,
-            'form' => $form->createView(),
+            'form' => $form,
         ]);
     }
 
