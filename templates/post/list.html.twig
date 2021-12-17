@@ -10,7 +10,7 @@
 <p><a href="{{ path('author_list') }}" class="btn btn-success">Liste des auteurs</a></p>
 
 
-<table class="table table-hoverable table-striped">
+<table class="table table-hoverable table-striped" id="crud-list">
     <thead>
         <tr>
             <th scope="col">#</th>
@@ -30,7 +30,10 @@
             <td>{% if post.updatedAt %}{{ post.updatedAt|date("Y-m-d H:i") }}{% endif %}</td>
             <td>
                 <a class="btn btn-sm btn-primary" href="{{ path('post_update', {id: post.id}) }}">Modifier</a>
-                <a onclick="return confirm('Supprimer l\'article : {{ post.title|e('js') }} ?')" class="btn btn-sm btn-danger" href="{{ path('post_delete', {id: post.id}) }}">Supprimer</a>
+                
+                <form method="post" action="{{ path('post_delete', {id: post.id}) }}" onsubmit="return confirm('Supprimer l\'article : {{ post.title|e('js') }} ?')">
+                    <button class="btn btn-sm btn-danger">Supprimer</button>
+                </form>
             </td>
         </tr>
         {% endfor %}

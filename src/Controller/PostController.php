@@ -204,7 +204,7 @@ class PostController extends AbstractController
     /**
      * Post delete
      * 
-     * @Route("/post/delete/{id}", name="post_delete", requirements={"id"="\d+"})
+     * @Route("/post/delete/{id}", name="post_delete", requirements={"id"="\d+"}, methods={"POST"})
      */
     public function delete($id, PostRepository $postRepository, ManagerRegistry $doctrine)
     {
