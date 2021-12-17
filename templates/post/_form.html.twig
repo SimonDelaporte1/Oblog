@@ -1,0 +1,13 @@
+{#
+La destination (URL) du form sera la même que celle qui affiche le form
+donc soit /post/add, soit /post/update/5 par ex.
+#}
+
+
+{{ form_start(form, {attr: {novalidate: 'novalidate'}}) }}
+
+    {{ form_widget(form) }}
+
+    <button type="submit" class="btn btn-success">Enregistrer</button>
+
+{{ form_end(form) }}

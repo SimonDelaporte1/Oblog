@@ -177,6 +177,7 @@ class PostController extends AbstractController
             // $post->setAuthor($author);
             //dump($post);
 
+            $post->setUpdatedAt(new DateTime());
             // On va faire appel au Manager de Doctrine
             $entityManager = $doctrine->getManager();
             // Prépare-toi à "persister" notre objet (req. INSERT INTO)
@@ -195,8 +196,8 @@ class PostController extends AbstractController
         // Ajout d'un message Flash
         // (type, message) => (label, message)
         // Sinon on affiche le formulaire
-        return $this->render('post/add.html.twig', [
-            'form' => $form->createView(),
+        return $this->renderForm('post/update.html.twig', [
+            'form' => $form,
         ]);
     }
 
